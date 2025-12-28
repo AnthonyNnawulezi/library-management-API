@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreAuthorRequest;
+use App\Http\Resources\AuthorResource;
 use App\Models\Author;
 use Illuminate\Http\Request;
 
@@ -12,52 +14,55 @@ class AuthorController extends Controller
      */
     public function index()
     {
-        $authors = Author::paginate(10);
+        $authors = Author::with('books')->paginate(10);
 
-        return response()->json([
-            'authors' => $authors,
-            'message' => 'Authors fetched successfully',
-        ]);
+        return AuthorResource::collection($authors);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreAuthorRequest $request)
     {
         // $author = Author::create($request->all());
-        $author = Author::create([
-            'name' => $request->name,
-            'bio' => $request->bio,
-            'nationality' => $request->nationality,
-        ]);
-        return response()->json([
-            'author' => $author,
-            'message' => 'Author created successfully',
-        ], 201);
+        $author = Author::create($request->validated());
+
+        return response()->json(new AuthorResource($author), 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Author $author)
     {
-        //
+        return new AuthorResource($author);
     }
+
+    //or
+    // public function show(string $id)
+    // {
+    //     $author = Author::findOrFail($id);
+    //     return new AuthorResource($author);
+    // }
+
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(StoreAuthorRequest $request, Author $author)
     {
-        //
+        $author->update($request->validated());
+        return new AuthorResource($author);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Author $author)
     {
-        //
+        $author->delete();
+        return response()->json([
+            'message' => 'Data deleted successfully.'
+        ]);
     }
 }
