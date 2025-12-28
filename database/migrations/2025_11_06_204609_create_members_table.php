@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('members', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->text('address')->nullable();
+            $table->date('membership_date')->nullable();
+            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->string('phone')->nullable();
             $table->timestamps();
         });
     }
