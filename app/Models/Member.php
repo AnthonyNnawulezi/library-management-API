@@ -16,7 +16,6 @@ class Member extends Model
         'address',
         'membership_date',
         'status',
-        'phone',
     ];
 
     protected $dates = [

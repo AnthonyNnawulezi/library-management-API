@@ -6,16 +6,34 @@ use App\Http\Requests\StoreBookRequest;
 use App\Http\Resources\BookResource;
 use App\Models\Book;
 use Illuminate\Http\Request;
+use App\Http\Requests\UpdateBookRequest;
 
 class BookController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $books = Book::with('author')->paginate(10);
-        return BookResource::collection($books);;
+        $query = Book::with('author');
+
+        if ($request->has('search')) {
+            // $search = $request->input('search'); or
+            $search = $request->search;
+            $query->where('title', 'like', "%$search%")
+                ->orWhere('isbn', 'like', "%$search%")
+                ->orWhereHas('author', function ($q) use ($search) {
+                    $q->where('name', 'like', "%$search%");
+                });
+        }
+
+        if ($request->has('genre')) {
+            $genre = $request->genre;
+            $query->where('genre', $genre);
+        }
+
+        $books = $query->paginate(10);
+        return BookResource::collection($books);
     }
 
     /**
@@ -45,7 +63,7 @@ class BookController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(StoreBookRequest $request, Book $book)
+    public function update(UpdateBookRequest $request, Book $book)
     {
         // $book = Book::findOrFail($book->id); why does it work withpout this line?
         $book->update($request->validated());
