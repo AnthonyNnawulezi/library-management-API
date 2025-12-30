@@ -45,16 +45,25 @@ class BookController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(StoreBookRequest $request, Book $book)
     {
-        //
+        // $book = Book::findOrFail($book->id); why does it work withpout this line?
+        $book->update($request->validated());
+        $book->load('author');
+        return new BookResource($book);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Book $book)
     {
-        //
+        try {
+            // $book = Book::findOrFail($book->id);
+            $book->delete();
+            return response()->json(['status' => 'success', 'message' => 'Book deleted successfully'], 200);
+        } catch (\Exception $th) {
+            return response()->json(['status' => 'error', 'message' => 'Book not found'], 404);
+        }
     }
 }
