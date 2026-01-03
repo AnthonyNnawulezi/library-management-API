@@ -54,24 +54,45 @@ class BorrowingController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Borrowing $borrowing)
     {
-        //
+        $borrowing->load(['member', 'book']);
+        return new BorrowingResource($borrowing);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function returnBook(Borrowing $borrowing)
     {
-        //
+        if ($borrowing->status === 'returned') {
+            return response()->json(['message' => 'This book has already been returned.'], 400);
+        }
+
+        // Update the borrowing record
+        $borrowing->status = 'returned';
+        $borrowing->returned_date = now();
+        $borrowing->save();
+        //or
+        // $borrowing->update([
+        //     'status' => 'returned',
+        //     'returned_date' => now(),
+        // ]);
+
+        // Update the book's available copies
+        $book = $borrowing->book;
+        $book->returnBook();
+
+        $borrowing->load(['member', 'book']);
+        return new BorrowingResource($borrowing);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function overdue()
     {
-        //
+        $overdueBorrowings = Borrowing::with(['member', 'book'])
+            ->where('due_date', '<', now())
+            ->where('status', 'borrowed')
+            ->get();
+
+        Borrowing::where('due_date', '<', now())->where('status', 'borrowed')->update(['status' => 'overdue']);
+
+        return BorrowingResource::collection($overdueBorrowings);
     }
 }

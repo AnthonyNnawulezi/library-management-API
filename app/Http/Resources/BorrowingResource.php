@@ -15,11 +15,12 @@ class BorrowingResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
+            // 'id' => $this->id,
             'member' => new MemberResource($this->whenLoaded('member')),
             'book' => new BookResource($this->whenLoaded('book')),
             'borrowed_date' => $this->borrowed_date,
-            'is_overdue' => $this->is_overdue(),
+            'is_overdue' => $this->isOverdue(),
+            'due_date' => $this->due_date,
             'returned_date' => $this->returned_date,
             'status' => $this->status,
             'created_at' => $this->created_at,

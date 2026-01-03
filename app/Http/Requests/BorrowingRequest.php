@@ -26,7 +26,7 @@ class BorrowingRequest extends FormRequest
             'book_id' => 'required|exists:books,id',
             'borrowed_date' => 'nullable|date',
             'due_date' => 'nullable|date|after:borrowed_date',
-            // 'status' => 'required|in:borrowed,returned,overdue',
+            'status' => 'required|in:borrowed,returned,overdue',
         ];
     }
 }
