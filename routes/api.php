@@ -9,11 +9,18 @@ use App\Http\Controllers\BorrowingController;
 use App\Models\Book;
 use App\Models\Member;
 use App\Models\Borrowing;
+use App\Models\Author;
+use App\Http\Controllers\AuthController;
 
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+
+//authntication routes
+Route::post('register', [AuthController::class, 'register']);
+Route::post('login', [AuthController::class, 'login']);
+Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 Route::apiResource('authors', AuthorController::class);
 
@@ -35,8 +42,10 @@ Route::get('borrowings/overdue/list', [BorrowingController::class, 'overdue']);
 Route::get('statistics', function () {
     return response()->json([
         'total_books' => Book::count(),
+        // 'total_authors' => Book::distinct('author_id')->count('author_id'),
+        'total_authors' => Author::count(),
         'total_members' => Member::count(),
-        'total_borrowings' => Borrowing::count(),
-        'active_borrowings' => Borrowing::where('status', 'borrowed')->count(),
+        'total_borrowings' => Borrowing::where('status', 'borrowed')->count() + Borrowing::where('status', 'returned')->count(),
+        'overdue_borrowings' => Borrowing::where('status', 'overdue')->count(),
     ]);
 });
