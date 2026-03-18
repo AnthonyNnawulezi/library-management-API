@@ -84,4 +84,10 @@ class BookController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Book not found'], 404);
         }
     }
+
+    public function listBooks()
+    {
+        $books = Book::latest()->take(10)->get();
+        return BookResource::collection($books);
+    }
 }

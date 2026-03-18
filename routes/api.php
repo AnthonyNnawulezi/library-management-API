@@ -20,32 +20,42 @@ Route::get('/user', function (Request $request) {
 //authntication routes
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
-Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
-Route::apiResource('authors', AuthorController::class);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::prefix('v1')->group(function () {
+        Route::get('user', [AuthController::class, 'user']);
+        Route::get('logout', [AuthController::class, 'logout']);
+        Route::apiResource('authors', AuthorController::class);
 
-//books
-Route::apiResource('books', BookController::class);
+        //books
+        Route::apiResource('books', BookController::class);
 
-//members
-Route::apiResource('members', MemberController::class);
+        //members
+        Route::apiResource('members', MemberController::class);
 
-//borrowings
-Route::apiResource('borrowings', BorrowingController::class)->only(['index', 'store', 'show']);
-// Route::apiResource('borrowings', BorrowingController::class)->except(['update', 'destroy']);
+        //borrowings
+        Route::apiResource('borrowings', BorrowingController::class)->only(['index', 'store', 'show']);
+        // Route::apiResource('borrowings', BorrowingController::class)->except(['update', 'destroy']);
 
-//return and overdue
-Route::post('borrowings/{borrowing}/return', [BorrowingController::class, 'returnBook']);
-Route::get('borrowings/overdue/list', [BorrowingController::class, 'overdue']);
+        //return and overdue
+        Route::post('borrowings/{borrowing}/return', [BorrowingController::class, 'returnBook']);
+        Route::get('borrowings/overdue/list', [BorrowingController::class, 'overdue']);
 
-//dashboard stats
-Route::get('statistics', function () {
-    return response()->json([
-        'total_books' => Book::count(),
-        // 'total_authors' => Book::distinct('author_id')->count('author_id'),
-        'total_authors' => Author::count(),
-        'total_members' => Member::count(),
-        'total_borrowings' => Borrowing::where('status', 'borrowed')->count() + Borrowing::where('status', 'returned')->count(),
-        'overdue_borrowings' => Borrowing::where('status', 'overdue')->count(),
-    ]);
+        //dashboard stats
+        Route::get('statistics', function () {
+            return response()->json([
+                'total_books' => Book::count(),
+                // 'total_authors' => Book::distinct('author_id')->count('author_id'),
+                'total_authors' => Author::count(),
+                'total_members' => Member::count(),
+                'total_borrowings' => Borrowing::where('status', 'borrowed')->count() + Borrowing::where('status', 'returned')->count(),
+                'overdue_borrowings' => Borrowing::where('status', 'overdue')->count(),
+            ]);
+        });
+    });
+
+    //recent books
+    Route::prefix('v2')->group(function () {
+        Route::get('recent-books', [BookController::class, 'listBooks']);
+    });
 });
