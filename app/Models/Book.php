@@ -41,13 +41,6 @@ class Book extends Model
 
     public function borrow(): void
     {
-        // if ($this->isAvailable()) {
-        //     $this->available_copies--;
-        //     $this->save();
-        //     return true;
-        // }
-        // return false;
-
         if ($this->available_copies > 0) {
             $this->decrement('available_copies');
         }

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreAuthorRequest;
 use App\Http\Resources\AuthorResource;
 use App\Models\Author;
-use Illuminate\Http\Request;
 
 class AuthorController extends Controller
 {
@@ -14,7 +13,7 @@ class AuthorController extends Controller
      */
     public function index()
     {
-        $authors = Author::with('books')->paginate(10);
+        $authors = Author::with('books')->withCount('books')->paginate(10);
 
         return AuthorResource::collection($authors);
     }
@@ -24,10 +23,11 @@ class AuthorController extends Controller
      */
     public function store(StoreAuthorRequest $request)
     {
-        // $author = Author::create($request->all());
         $author = Author::create($request->validated());
 
-        return response()->json(new AuthorResource($author), 201);
+        return (new AuthorResource($author))->response()->setStatusCode(201); //best 
+        // return response()->json(new AuthorResource($author), 201);
+
     }
 
     /**
@@ -37,11 +37,9 @@ class AuthorController extends Controller
     {
         return new AuthorResource($author);
     }
-
-    //or
     // public function show(string $id)
     // {
-    //     $author = Author::findOrFail($id);
+    //     $author = Author::find($id)
     //     return new AuthorResource($author);
     // }
 
