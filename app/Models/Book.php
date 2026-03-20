@@ -24,6 +24,10 @@ class Book extends Model
         'status',
     ];
 
+    protected $casts = [
+        'published_date' => 'date',
+    ];
+
     public function author()
     {
         return $this->belongsTo(Author::class);

@@ -43,22 +43,29 @@ class BookController extends Controller
     {
         $book = Book::create($request->validated());
         $book->load('author');
-        return new BookResource($book);
+        return (new BookResource($book))->response()->setStatusCode(201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $book)
+    public function show(Book $book)
     {
-        try {
-            $book = Book::findOrFail($book);
-            $book->load('author');
-            return new BookResource($book);
-        } catch (\Exception $th) {
-            return response()->json(['status' => 'error', 'message' => 'Book not found'], 404);
-        }
+        $book->load('author');
+
+        return new BookResource($book);
     }
+
+    // public function show(string $book) above is far better
+    // {
+    //     try {
+    //         $book = Book::findOrFail($book);
+    //         $book->load('author');
+    //         return new BookResource($book);
+    //     } catch (\Exception $th) {
+    //         return response()->json(['status' => 'error', 'message' => 'Book not found'], 404);
+    //     }
+    // }
 
     /**
      * Update the specified resource in storage.

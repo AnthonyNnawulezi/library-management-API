@@ -30,7 +30,7 @@ class UpdateBookRequest extends FormRequest
             // Rule::unique('books')->ignore($this->route('book')),
             'isbn' => 'required|string|max:13|unique:books,isbn,' . $this->book->id,
             'description' => 'nullable|string',
-            'publication_date' => 'nullable|date',
+            'published_date' => 'nullable|date',
             'author_id' => 'required|exists:authors,id',
             'genre' => 'required|string|max:100',
             'total_copies' => 'required|integer|min:1',
