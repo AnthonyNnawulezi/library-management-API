@@ -51,9 +51,7 @@ class BookController extends Controller
      */
     public function show(Book $book)
     {
-        $book->load('author');
-
-        return new BookResource($book);
+        return new BookResource($book->load('author'));
     }
 
     // public function show(string $book) above is far better
@@ -72,7 +70,6 @@ class BookController extends Controller
      */
     public function update(UpdateBookRequest $request, Book $book)
     {
-        // $book = Book::findOrFail($book->id); why does it work withpout this line?
         $book->update($request->validated());
         $book->load('author');
         return new BookResource($book);

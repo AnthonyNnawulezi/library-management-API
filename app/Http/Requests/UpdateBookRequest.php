@@ -24,11 +24,12 @@ class UpdateBookRequest extends FormRequest
     {
         return [
             'title' => 'required|string|max:255',
-            // 'isbn' => 'required|string|max:13|unique:books,isbn',
-            // 'isbn' => 'required',
-            // 'isbn',
-            // Rule::unique('books')->ignore($this->route('book')),
-            'isbn' => 'required|string|max:13|unique:books,isbn,' . $this->book->id,
+            'isbn' => [
+                'required',
+                'string',
+                'max:13',
+                Rule::unique('books', 'isbn')->ignore($this->route('book')),
+            ],
             'description' => 'nullable|string',
             'published_date' => 'nullable|date',
             'author_id' => 'required|exists:authors,id',
