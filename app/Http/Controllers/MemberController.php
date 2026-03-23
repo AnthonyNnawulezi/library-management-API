@@ -16,11 +16,19 @@ class MemberController extends Controller
     public function index(Request $request)
     {
         $query = Member::with('activeBorrowings');
-        if ($request->has('search')) {
-            $search = $request->search;
-            $query->where('name', 'like', "%$search%")
-                ->orWhere('email', 'like', "%$search%");
-        }
+        $search = $request->search;
+
+        $query->where(function ($q) use ($search) {
+            $q->where('name', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%");
+        });
+
+        // if ($request->has('search')) { above is better for grouping so that $status below can apply to all of them
+        //     // $search = $request->search; 
+        //     $query->where('name', 'like', "%$search%")
+        //         ->orWhere('email', 'like', "%$search%");
+        // }
+
         if ($request->has('status')) {
             $status = $request->status;
             $query->where('status', $status);
@@ -45,7 +53,7 @@ class MemberController extends Controller
      */
     public function show(Member $member)
     {
-        $member->load('activeBorrowings', 'borrowings');
+        $member->load(['borrowings', 'activeBorrowings']);
         return new MemberResource($member);
     }
 

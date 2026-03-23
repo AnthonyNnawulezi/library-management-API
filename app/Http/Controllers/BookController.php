@@ -17,23 +17,24 @@ class BookController extends Controller
     {
         $query = Book::with('author');
 
-        if ($request->has('search')) {
+        if ($request->filled('search')) {
             // $search = $request->input('search'); or
-            $search = $request->search;
-            $query->where('title', 'like', "%$search%")
-                ->orWhere('isbn', 'like', "%$search%")
-                ->orWhereHas('author', function ($q) use ($search) {
-                    $q->where('name', 'like', "%$search%");
-                });
-        }
+            $search = trim($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%$search%")
+                    ->orWhere('isbn', 'like', "%$search%")
+                    ->orWhereHas('author', function ($q) use ($search) {
+                        $q->where('name', 'like', "%$search%");
+                    });
+            });
 
-        if ($request->has('genre')) {
-            $genre = $request->genre;
-            $query->where('genre', $genre);
-        }
+            if ($request->filled('genre')) {
+                $query->where('genre', $request->genre);
+            }
 
-        $books = $query->paginate(10);
-        return BookResource::collection($books);
+            $books = $query->paginate(10);
+            return BookResource::collection($books);
+        }
     }
 
     /**
@@ -80,13 +81,8 @@ class BookController extends Controller
      */
     public function destroy(Book $book)
     {
-        try {
-            // $book = Book::findOrFail($book->id);
-            $book->delete();
-            return response()->json(['status' => 'success', 'message' => 'Book deleted successfully'], 200);
-        } catch (\Exception $th) {
-            return response()->json(['status' => 'error', 'message' => 'Book not found'], 404);
-        }
+        $book->delete();
+        return response()->json(['status' => 'success', 'message' => 'Book deleted successfully'], 200);
     }
 
     public function listBooks()

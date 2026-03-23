@@ -25,9 +25,11 @@ class UpdateMemberRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             // 'email' => 'required|email|unique:members,email',
-            'email' => 'required',
-            'email',
-            Rule::unique('members')->ignore($this->member),
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('members')->ignore($this->member)
+            ],
             'address' => 'nullable|string|max:500',
             'membership_date' => 'date',
             'status' => 'required',

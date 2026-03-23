@@ -24,10 +24,12 @@ class StoreMemberRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:members,email',
-            // 'email' => 'required',
-            // 'email',
-            // Rule::unique('members')->ignore($this->member),
+            // 'email' => 'required|email|unique:members,email',
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('members')->ignore($this->route('member')->id)
+            ],
             'address' => 'nullable|string|max:500',
             'membership_date' => 'date',
             'status' => 'required',

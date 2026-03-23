@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Borrowing;
 
 class Member extends Model
 {
@@ -18,16 +20,16 @@ class Member extends Model
         'status',
     ];
 
-    protected $dates = [
-        'membership_date',
+    protected $casts = [
+        'membership_date' => 'date',
     ];
 
-    public function borrowings()
+    public function borrowings(): HasMany
     {
         return $this->hasMany(Borrowing::class);
     }
 
-    public function activeBorrowings()
+    public function activeBorrowings(): HasMany
     {
         return $this->borrowings()->where('status', 'borrowed');
     }
