@@ -16,12 +16,14 @@ class MemberController extends Controller
     public function index(Request $request)
     {
         $query = Member::with('activeBorrowings');
-        $search = $request->search;
+        if ($request->filled('search')) {
+            $search = trim((string) $request->search);
 
-        $query->where(function ($q) use ($search) {
-            $q->where('name', 'like', "%{$search}%")
-                ->orWhere('email', 'like', "%{$search}%");
-        });
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
 
         // if ($request->has('search')) { above is better for grouping so that $status below can apply to all of them
         //     // $search = $request->search; 
@@ -29,7 +31,7 @@ class MemberController extends Controller
         //         ->orWhere('email', 'like', "%$search%");
         // }
 
-        if ($request->has('status')) {
+        if ($request->filled('status')) {
             $status = $request->status;
             $query->where('status', $status);
         }
@@ -72,7 +74,8 @@ class MemberController extends Controller
     public function destroy(Member $member)
     {
         if ($member->activeBorrowings()->count() > 0) {
-            return response()->json(['status' => 'error', 'message' => 'Cannot delete member with active borrowings'], 422);
+            // if ($member->activeBorrowings()->exists()) {...}
+            return response()->json(['status' => 'error', 'message' => 'Cannot delete member with active borrowings'], 409);
         }
         $member->delete();
         return response()->json(['status' => 'success', 'message' => 'Member deleted successfully']);

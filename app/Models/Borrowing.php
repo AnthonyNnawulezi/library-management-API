@@ -20,10 +20,10 @@ class Borrowing extends Model
         'status',
     ];
 
-    protected $dates = [
-        'borrowed_date',
-        'due_date',
-        'returned_date',
+    protected $casts = [
+        'borrowed_date' => 'date',
+        'due_date' => 'date',
+        'returned_date' => 'date',
     ];
 
     public function book()
@@ -36,7 +36,6 @@ class Borrowing extends Model
         return $this->belongsTo(Member::class);
     }
 
-    //if borrowing is overdue
     public function isOverdue()
     {
         return $this->due_date < now() && $this->status === 'borrowed';

@@ -26,8 +26,8 @@ class BorrowingController extends Controller
         if ($request->has('member_id')) {
             $query->where('member_id', $request->member_id);
         }
-        $borrowings = $query->latest()->paginate(15);
 
+        $borrowings = $query->latest()->paginate(15)->withQueryString();
         return BorrowingResource::collection($borrowings);
     }
 
@@ -36,11 +36,11 @@ class BorrowingController extends Controller
      */
     public function store(BorrowingRequest $request)
     {
-        $book = Book::findOrFail($request->book_id);
+        $book = Book::findOrFail($request->book_id); //useless since it exists in the borrowing request
 
         // Check if the book is available
         if (!$book->isAvailable()) {
-            return response()->json(['message' => 'Book is not available for borrowing.'], 400);
+            return response()->json(['message' => 'Book is not available for borrowing.'], 409);
         }
         // Create the borrowing record
         $borrowing = Borrowing::create($request->validated());
@@ -59,6 +59,7 @@ class BorrowingController extends Controller
         $borrowing->load(['member', 'book']);
         return new BorrowingResource($borrowing);
     }
+
 
     public function returnBook(Borrowing $borrowing)
     {
@@ -91,6 +92,7 @@ class BorrowingController extends Controller
             ->where('status', 'borrowed')
             ->get();
 
+        //update status to overdue
         Borrowing::where('due_date', '<', now())->where('status', 'borrowed')->update(['status' => 'overdue']);
 
         return BorrowingResource::collection($overdueBorrowings);

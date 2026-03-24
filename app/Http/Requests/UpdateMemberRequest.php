@@ -29,7 +29,7 @@ class UpdateMemberRequest extends FormRequest
                 'required',
                 'email',
                 Rule::unique('members')->ignore($this->member)
-            ],
+            ], //ignore if current member exists
             'address' => 'nullable|string|max:500',
             'membership_date' => 'date',
             'status' => 'required',
