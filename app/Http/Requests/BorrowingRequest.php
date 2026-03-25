@@ -25,7 +25,7 @@ class BorrowingRequest extends FormRequest
             'member_id' => 'required|exists:members,id',
             'book_id' => 'required|exists:books,id',
             'borrowed_date' => 'nullable|date',
-            'due_date' => 'nullable|date|after:borrowed_date',
+            'due_date' => 'nullable|date|after:today',
             'status' => 'required|in:borrowed,returned,overdue',
         ];
     }

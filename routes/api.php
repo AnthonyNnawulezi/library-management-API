@@ -48,7 +48,7 @@ Route::middleware('auth:sanctum')->group(function () {
                 // 'total_authors' => Book::distinct('author_id')->count('author_id'),
                 'total_authors' => Author::count(),
                 'total_members' => Member::count(),
-                'total_borrowings' => Borrowing::where('status', 'borrowed')->count() + Borrowing::where('status', 'returned')->count(),
+                'total_borrowings' => Borrowing::count(),
                 'overdue_borrowings' => Borrowing::where('status', 'overdue')->count(),
             ]);
         });
