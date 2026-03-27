@@ -17,10 +17,11 @@ class AuthController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
         ]);
+
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'password' => bcrypt($validated['password']),
+            'password' => Hash::make($validated['password']),
         ]);
 
         // Create token
@@ -28,8 +29,7 @@ class AuthController extends Controller
 
         return response()->json([
             'access_token' => $token,
-            // 'token_type' => 'Bearer',
-            'user' => new userResource($user),
+            'user' => new UserResource($user),
             'success' => true
         ], 201);
     }
@@ -51,7 +51,6 @@ class AuthController extends Controller
 
         return response()->json([
             'access_token' => $token,
-            // 'token_type' => 'Bearer',
             'user' => new userResource($user),
             'success' => true
         ]);
@@ -89,9 +88,21 @@ class AuthController extends Controller
         ]);
     }
 
-    public function user()
+    // public function logout(Request $request)
+    // {
+    //     $user = $request->user();
+    //     $user?->currentAccessToken()?->delete();
+
+    //     return response()->json([
+    //         'message' => 'Successfully logged out',
+    //         'success' => true
+    //     ]);
+    // }
+
+
+    public function user(Request $request)
     {
         // return new userResource(Auth::user());
-        return new userResource(request()->user());
+        return new UserResource($request->user());
     }
 }

@@ -13,9 +13,9 @@ use App\Models\Author;
 use App\Http\Controllers\AuthController;
 
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+// Route::get('/user', function (Request $request) {or the user route below
+//     return $request->user();
+// })->middleware('auth:sanctum');
 
 //authntication routes
 Route::post('register', [AuthController::class, 'register']);
@@ -24,7 +24,7 @@ Route::post('login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('v1')->group(function () {
         Route::get('user', [AuthController::class, 'user']);
-        Route::get('logout', [AuthController::class, 'logout']);
+        Route::post('logout', [AuthController::class, 'logout']);
         Route::apiResource('authors', AuthorController::class);
 
         //books
