@@ -33,13 +33,14 @@ class AuthorController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Author $author)
+    public function show(Author $author): AuthorResource
     {
+        $author->load(['books'])->loadCount('books');
         return new AuthorResource($author);
     }
     // public function show(string $id)
     // {
-    //     $author = Author::find($id)
+    //     $author = Author::find($id);
     //     return new AuthorResource($author);
     // }
 
@@ -47,7 +48,7 @@ class AuthorController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(StoreAuthorRequest $request, Author $author)
+    public function update(StoreAuthorRequest $request, Author $author): AuthorResource
     {
         $author->update($request->validated());
         return new AuthorResource($author);
@@ -60,7 +61,8 @@ class AuthorController extends Controller
     {
         $author->delete();
         return response()->json([
-            'message' => 'Data deleted successfully.'
+            'status' => 'success',
+            'message' => 'Author deleted successfully.',
         ]);
     }
 }
