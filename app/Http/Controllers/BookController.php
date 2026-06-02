@@ -27,14 +27,14 @@ class BookController extends Controller
                         $q->where('name', 'like', "%$search%");
                     });
             });
-
-            if ($request->filled('genre')) {
-                $query->where('genre', $request->genre);
-            }
-
-            $books = $query->paginate(10);
-            return BookResource::collection($books);
         }
+
+        if ($request->filled('genre')) {
+            $query->where('genre', $request->genre);
+        }
+
+        $books = $query->paginate(10);
+        return BookResource::collection($books);
     }
 
     /**
@@ -54,17 +54,6 @@ class BookController extends Controller
     {
         return new BookResource($book->load('author'));
     }
-
-    // public function show(string $book) above is far better
-    // {
-    //     try {
-    //         $book = Book::findOrFail($book);
-    //         $book->load('author');
-    //         return new BookResource($book);
-    //     } catch (\Exception $th) {
-    //         return response()->json(['status' => 'error', 'message' => 'Book not found'], 404);
-    //     }
-    // }
 
     /**
      * Update the specified resource in storage.
