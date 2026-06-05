@@ -25,12 +25,6 @@ class MemberController extends Controller
             });
         }
 
-        // if ($request->has('search')) { above is better for grouping so that $status below can apply to all of them
-        //     // $search = $request->search; 
-        //     $query->where('name', 'like', "%$search%")
-        //         ->orWhere('email', 'like', "%$search%");
-        // }
-
         if ($request->filled('status')) {
             $status = $request->status;
             $query->where('status', $status);
