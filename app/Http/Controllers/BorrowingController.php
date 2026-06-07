@@ -71,17 +71,11 @@ class BorrowingController extends Controller
         $borrowing->status = 'returned';
         $borrowing->returned_date = now();
         $borrowing->save();
-        //or
-        // $borrowing->update([
-        //     'status' => 'returned',
-        //     'returned_date' => now(),
-        // ]);
 
         // Update the book's available copies
-        $book = $borrowing->book;
-        $book->returnBook();
-
+        $borrowing->book->returnBook();
         $borrowing->load(['member', 'book']);
+
         return new BorrowingResource($borrowing);
     }
 
